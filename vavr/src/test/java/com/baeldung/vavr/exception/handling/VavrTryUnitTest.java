@@ -103,7 +103,6 @@ public class VavrTryUnitTest {
         assertTrue(recovered.isSuccess());
     }
 
-
     public int actionThatTakesResponse(Response response) {
         return response.id.hashCode();
     }
@@ -111,5 +110,4 @@ public class VavrTryUnitTest {
     public int actionThatTakesTryResponse(Try<Response> response, int defaultTransformation) {
         return response.transform(responses -> response.map(it -> it.id.hashCode()).getOrElse(defaultTransformation));
     }
-
 }

@@ -14,9 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class VavrExceptionHandlingUnitTest {
-
     private static final Logger LOG = LoggerFactory.getLogger(VavrExceptionHandlingUnitTest.class);
-
     private List<Integer> integers;
     private List<Integer> validIntegersOnly;
 
@@ -28,31 +26,37 @@ public class VavrExceptionHandlingUnitTest {
 
     @Test
     public void exceptionCausingMethod_UsingCheckedFunction_ThenSuccess() {
-        CheckedFunction1<Integer, Integer> fn = i -> readFromFile(i);
-
-        validIntegersOnly.stream().map(fn.unchecked()).forEach(i -> LOG.debug("{}", i));
+        CheckedFunction1<Integer, Integer> fn = VavrExceptionHandlingUnitTest::readFromFile;
+        validIntegersOnly.stream()
+          .map(fn.unchecked())
+          .forEach(i -> LOG.debug("{}", i));
     }
 
     @Test(expected = IOException.class)
     public void exceptionCausingMethod_UsingCheckedFunction_ThenFailure() {
-        CheckedFunction1<Integer, Integer> fn = i -> readFromFile(i);
-
-        integers.stream().map(fn.unchecked()).forEach(i -> LOG.debug("{}", i));
+        CheckedFunction1<Integer, Integer> fn = VavrExceptionHandlingUnitTest::readFromFile;
+        integers.stream()
+          .map(fn.unchecked())
+          .forEach(i -> LOG.debug("{}", i));
     }
 
     @Test
     public void exceptionCausingMethod_UsingAPI_ThenSuccess() {
-        validIntegersOnly.stream().map(API.unchecked(i -> readFromFile(i))).forEach(i -> LOG.debug("{}", i));
+        validIntegersOnly.stream()
+          .map(API.unchecked(VavrExceptionHandlingUnitTest::readFromFile))
+          .forEach(i -> LOG.debug("{}", i));
     }
 
     @Test(expected = IOException.class)
     public void exceptionCausingMethod_UsingAPI_ThenFailure() {
-        integers.stream().map(API.unchecked(i -> readFromFile(i))).forEach(i -> LOG.debug("{}", i));
+        integers.stream()
+          .map(API.unchecked(VavrExceptionHandlingUnitTest::readFromFile))
+          .forEach(i -> LOG.debug("{}", i));
     }
 
     @Test
     public void exceptionCausingMethod_UsingLift_ThenSuccess() {
-        validIntegersOnly.stream().map(CheckedFunction1.lift(i -> readFromFile(i)))
+        validIntegersOnly.stream().map(CheckedFunction1.lift(VavrExceptionHandlingUnitTest::readFromFile))
           .map(i -> i.getOrElse(-1))
           .forEach(i -> {
               Assert.assertNotSame(-1, i);
@@ -63,10 +67,9 @@ public class VavrExceptionHandlingUnitTest {
     @Test
     public void exceptionCausingMethod_UsingLift_ThenFailure() {
         integers.stream()
-          .map(CheckedFunction1.lift(i -> readFromFile(i)))
+          .map(CheckedFunction1.lift(VavrExceptionHandlingUnitTest::readFromFile))
           .map(i -> i.getOrElse(-1))
           .forEach(i -> LOG.debug("{}", i));
-
     }
 
     @Test
@@ -83,5 +86,4 @@ public class VavrExceptionHandlingUnitTest {
         }
         return i * i;
     }
-
 }

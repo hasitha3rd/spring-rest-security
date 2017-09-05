@@ -71,7 +71,6 @@ public class VavrUnitTest {
         assertEquals("JavaVavr", mapOfJava8._1);
 
         assertEquals(4, num);
-
     }
 
     // mapping--with one mapper(using BiFunction interface)
@@ -153,7 +152,7 @@ public class VavrUnitTest {
         assertEquals(11, summed);
     }
 
-    public int sum(int a, int b) {
+    private int sum(int a, int b) {
         return a + b;
     }
 
@@ -333,8 +332,11 @@ public class VavrUnitTest {
     @Test
     public void whenMatchworks_thenCorrect() {
         int input = 2;
-        String output = Match(input).of(Case($(1), "one"), Case($(2), "two"), Case($(3), "three"), Case($(), "?"));
+        String output = Match(input).of(
+          Case($(1), "one"),
+          Case($(2), "two"),
+          Case($(3), "three"),
+          Case($(), "?"));
         assertEquals("two", output);
     }
-
 }

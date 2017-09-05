@@ -2,8 +2,9 @@ package com.baeldung.vavr.collections;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.collection.*;
+import io.vavr.collection.Array;
 import io.vavr.collection.BitSet;
+import io.vavr.collection.CharSeq;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Iterator;
@@ -13,12 +14,13 @@ import io.vavr.collection.Queue;
 import io.vavr.collection.Set;
 import io.vavr.collection.SortedMap;
 import io.vavr.collection.SortedSet;
+import io.vavr.collection.Stream;
 import io.vavr.collection.TreeMap;
 import io.vavr.collection.TreeSet;
 import io.vavr.collection.Vector;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -30,36 +32,35 @@ import static org.junit.Assert.assertTrue;
 
 public class CollectionAPIUnitTest {
 
-
     @Test
     public void givenParams_whenListAPI_thenCorrect() {
 
         List<String> list
           = List.of("Java", "PHP", "Jquery", "JavaScript", "JShell", "JAVA");
 
-        List list1 = list.drop(2);
+        List<String> list1 = list.drop(2);
         assertFalse(list1.contains("Java") && list1.contains("PHP"));
 
-        List list2 = list.dropRight(2);
+        List<String> list2 = list.dropRight(2);
         assertFalse(list2.contains("JAVA") && list2.contains("JShell"));
 
-        List list3 = list.dropUntil(s -> s.contains("Shell"));
+        List<String> list3 = list.dropUntil(s -> s.contains("Shell"));
         assertEquals(list3.size(), 2);
-        
-        List list4 = list.dropWhile(s -> s.length() > 0);
+
+        List<String> list4 = list.dropWhile(s -> s.length() > 0);
         assertTrue(list4.isEmpty());
 
-        List list5 = list.take(1);
+        List<String> list5 = list.take(1);
         assertEquals(list5.single(), "Java");
 
-        List list6 = list.takeRight(1);
+        List<String> list6 = list.takeRight(1);
         assertEquals(list6.single(), "JAVA");
 
-        List list7 = list.takeUntil(s -> s.length() > 6);
+        List<String> list7 = list.takeUntil(s -> s.length() > 6);
         assertEquals(list7.size(), 3);
 
-        List list8
-          = list.distinctBy( (s1, s2) -> s1.startsWith(s2.charAt(0)+"") ? 0 : 1);
+        List<String> list8
+          = list.distinctBy((s1, s2) -> s1.startsWith(s2.charAt(0) + "") ? 0 : 1);
         assertEquals(list8.size(), 2);
 
         Iterator<List<String>> iterator = list.grouped(2);
@@ -71,10 +72,10 @@ public class CollectionAPIUnitTest {
         assertEquals(map.get(true).get().size(), 5);
 
         String words = List.of("Boys", "Girls")
-                         .intersperse("and")
-                         .reduce((s1, s2) -> s1.concat( " " + s2 ))
-                         .trim();
-        
+          .intersperse("and")
+          .reduce((s1, s2) -> s1.concat(" " + s2))
+          .trim();
+
         assertEquals(words, "Boys and Girls");
 
     }
@@ -84,12 +85,12 @@ public class CollectionAPIUnitTest {
 
         List<Integer> intList = List.empty();
 
-        List<Integer> intList1 = intList.pushAll(List.rangeClosed(5,10));
+        List<Integer> intList1 = intList.pushAll(List.rangeClosed(5, 10));
 
         assertEquals(intList1.peek(), Integer.valueOf(10));
 
         List intList2 = intList1.pop();
-        assertEquals(intList2.size(), (intList1.size() - 1) );
+        assertEquals(intList2.size(), (intList1.size() - 1));
 
     }
 
@@ -114,7 +115,7 @@ public class CollectionAPIUnitTest {
     public void givenQueue_whenEnqueued_thenCorrect() {
 
         Queue<Integer> queue = Queue.of(1, 2, 3);
-        Queue<Integer> secondQueue = queue.enqueueAll(List.of(4,5));
+        Queue<Integer> secondQueue = queue.enqueueAll(List.of(4, 5));
 
         assertEquals(3, queue.size());
         assertEquals(5, secondQueue.size());
@@ -132,12 +133,12 @@ public class CollectionAPIUnitTest {
     @Test
     public void givenStream_whenProcessed_thenCorrect() {
 
-        Stream<Integer> s1 = Stream.tabulate(5, (i)-> i + 1);
+        Stream<Integer> s1 = Stream.tabulate(5, (i) -> i + 1);
         assertEquals(s1.get(2).intValue(), 3);
 
-        Stream<Integer> s = Stream.of(2,1,3,4);
+        Stream<Integer> s = Stream.of(2, 1, 3, 4);
 
-        Stream<Tuple2<Integer, Integer>> s2 = s.zip(List.of(7,8,9));
+        Stream<Tuple2<Integer, Integer>> s2 = s.zip(List.of(7, 8, 9));
         Tuple2<Integer, Integer> t1 = s2.get(0);
         assertEquals(t1._1().intValue(), 2);
         assertEquals(t1._2().intValue(), 7);
@@ -163,7 +164,7 @@ public class CollectionAPIUnitTest {
         Array<Integer> rArray2 = Array.rangeClosed(1, 5);
         assertTrue(rArray2.contains(5));
 
-        Array<Integer> rArray3 = Array.rangeClosedBy(1,6,2);
+        Array<Integer> rArray3 = Array.rangeClosedBy(1, 6, 2);
         assertEquals(rArray3.size(), 3);
 
         Array<Integer> intArray = Array.of(1, 2, 3);
@@ -209,12 +210,12 @@ public class CollectionAPIUnitTest {
         assertEquals(4, newSet.size());
         assertTrue(newSet.contains("Yellow"));
 
-        HashSet<Integer> set0 = HashSet.rangeClosed(1,5);
+        HashSet<Integer> set0 = HashSet.rangeClosed(1, 5);
         HashSet<Integer> set1 = HashSet.rangeClosed(3, 6);
 
-        assertEquals(set0.union(set1), HashSet.rangeClosed(1,6));
-        assertEquals(set0.diff(set1), HashSet.rangeClosed(1,2));
-        assertEquals(set0.intersect(set1), HashSet.rangeClosed(3,5));
+        assertEquals(set0.union(set1), HashSet.rangeClosed(1, 6));
+        assertEquals(set0.diff(set1), HashSet.rangeClosed(1, 2));
+        assertEquals(set0.intersect(set1), HashSet.rangeClosed(3, 5));
 
 
     }
@@ -224,9 +225,9 @@ public class CollectionAPIUnitTest {
         SortedSet<String> set = TreeSet.of("Red", "Green", "Blue");
         assertEquals("Blue", set.head());
 
-        SortedSet<Integer> intSet = TreeSet.of(1,2,3);
+        SortedSet<Integer> intSet = TreeSet.of(1, 2, 3);
         assertEquals(2, intSet.average().get().intValue());
-        
+
     }
 
     @Test
@@ -242,7 +243,7 @@ public class CollectionAPIUnitTest {
     @Test
     public void giveBitSet_whenApiMethods_thenCorrect() {
 
-        BitSet<Integer> bitSet = BitSet.of(1,2,3,4,5,6,7,8);
+        BitSet<Integer> bitSet = BitSet.of(1, 2, 3, 4, 5, 6, 7, 8);
 
         BitSet<Integer> bitSet1 = bitSet.takeUntil(i -> i > 4);
         assertEquals(bitSet1.size(), 4);
@@ -253,7 +254,7 @@ public class CollectionAPIUnitTest {
     public void givenMap_whenMapApi_thenCorrect() {
         Map<Integer, List<Integer>> map = List.rangeClosed(0, 10)
           .groupBy(i -> i % 2);
-        
+
         assertEquals(2, map.size());
         assertEquals(6, map.get(0).get().size());
         assertEquals(5, map.get(1).get().size());
@@ -271,7 +272,7 @@ public class CollectionAPIUnitTest {
         assertTrue(fMap2.containsValue("val3"));
 
         Map<String, Integer> map2 = map1.map(
-          (k, v) -> Tuple.of(k, Integer.valueOf(v.charAt(v.length() - 1) + "") ));
+          (k, v) -> Tuple.of(k, Integer.valueOf(v.charAt(v.length() - 1) + "")));
         assertEquals(map2.get("key1").get().intValue(), 1);
     }
 
@@ -284,7 +285,7 @@ public class CollectionAPIUnitTest {
         assertEquals("Four", map.get(4).get());
 
         TreeMap<Integer, String> treeMap2 =
-          TreeMap.of(Comparator.reverseOrder(), 3,"three", 6, "six", 1, "one");
+          TreeMap.of(Comparator.reverseOrder(), 3, "three", 6, "six", 1, "one");
         assertEquals(treeMap2.keySet().mkString(), "631");
 
     }
